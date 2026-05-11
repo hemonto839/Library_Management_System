@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library Management System – Sign In</title>
+  <meta name="description" content="Login or register to access the Library Management System." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-body">
+
+  <!-- Animated background orbs -->
+  <div class="auth-bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <div class="auth-wrap">
+    <div class="auth-card">
+
+      <!-- Logo -->
+      <div class="auth-logo">
+        <span class="auth-icon">📚</span>
+        <h1>LibraryMS</h1>
+        <p>Library Management System</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required />
+        </div>
+        <div id="login-alert" class="alert alert-error hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn">
+          <span id="login-btn-text">Sign In</span>
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="John Doe" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="Min 6 chars" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="reg-role" class="form-input form-select" onchange="toggleStudentField()">
+            <option value="admin">Admin</option>
+            <option value="librarian">Librarian</option>
+            <option value="student">Student</option>
+          </select>
+        </div>
+        <div class="form-group hidden" id="student-id-wrap">
+          <label class="form-label">Student DB ID <span style="color:var(--t3)">(optional – links your profile)</span></label>
+          <input type="number" id="reg-student-id" class="form-input" placeholder="e.g. 1" />
+        </div>
+        <div id="register-alert" class="alert alert-error hidden"></div>
+        <div id="register-ok"    class="alert alert-success hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="register-btn">
+          <span id="reg-btn-text">Create Account</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    // ── redirect if already logged in ──
+    if (getToken()) {
+      const u = getUser();
+      if (u) location.href = "/dashboard.html";
+    }
+
+    function switchTab(tab) {
+      document.getElementById("login-form").classList.toggle("hidden", tab !== "login");
+      document.getElementById("register-form").classList.toggle("hidden", tab !== "register");
+      document.getElementById("tab-login").classList.toggle("active", tab === "login");
+      document.getElementById("tab-register").classList.toggle("active", tab === "register");
+      document.getElementById("login-alert").classList.add("hidden");
+      document.getElementById("register-alert").classList.add("hidden");
+      document.getElementById("register-ok").classList.add("hidden");
+    }
+
+    function toggleStudentField() {
+      const role = document.getElementById("reg-role").value;
+      document.getElementById("student-id-wrap").classList.toggle("hidden", role !== "student");
+    }
+
+    function setLoading(btnId, textId, loading, text) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      document.getElementById(textId).innerHTML = loading
+        ? '<span class="spinner"></span> Please wait…'
+        : text;
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const alertEl = document.getElementById("login-alert");
+      alertEl.classList.add("hidden");
+      setLoading("login-btn", "login-btn-text", true, "Sign In");
+      try {
+        const data = await api.post("/auth/login", {
+          email: document.getElementById("login-email").value.trim(),
+          password: document.getElementById("login-password").value,
+        });
+        saveAuth(data.token);
+        location.href = "/dashboard.html";
+      } catch (err) {
+        alertEl.textContent = err.message;
+        alertEl.classList.remove("hidden");
+        setLoading("login-btn", "login-btn-text", false, "Sign In");
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const errEl = document.getElementById("register-alert");
+      const okEl  = document.getElementById("register-ok");
+      errEl.classList.add("hidden");
+      okEl.classList.add("hidden");
+      setLoading("register-btn", "reg-btn-text", true, "Create Account");
+
+      const role      = document.getElementById("reg-role").value;
+      const studentId = document.getElementById("reg-student-id").value;
+      const body = {
+        name:     document.getElementById("reg-name").value.trim(),
+        email:    document.getElementById("reg-email").value.trim(),
+        password: document.getElementById("reg-password").value,
+        role,
+      };
+      if (role === "student" && studentId) body.studentId = Number(studentId);
+
+      try {
+        await api.post("/auth/register", body);
+        okEl.textContent = "✅ Account created! You can now sign in.";
+        okEl.classList.remove("hidden");
+        document.getElementById("register-form").reset();
+        setTimeout(() => switchTab("login"), 1800);
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove("hidden");
+      } finally {
+        setLoading("register-btn", "reg-btn-text", false, "Create Account");
+      }
+    }
+  </script>
+</body>
+</html>
