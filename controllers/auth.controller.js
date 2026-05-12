@@ -7,31 +7,20 @@ const {
     isValidEmail,
 } = require("../utils/validation");
 
-// Create JWT token
-function generateToken(user) {
-    return jwt.sign(
-        {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-        },
-        process.env.JWT_SECRET,
-        {
-            expiresIn: process.env.JWT_EXPIRES_IN || "1d",
-        }
-    );
-}
-
-// POST /auth/register
+// Register
 async function register(req, res) {
-    const { name, email, password, role, studentId } = req.body;
+    const { name, email, password, role, student_id } = req.body;
 
     if (!isNonEmptyString(name)) {
-        return res.status(400).json({ message: "Name is required" });
+        return res.status(400).json({
+            message: "Name is required",
+        });
     }
 
     if (!isValidEmail(email)) {
-        return res.status(400).json({ message: "Valid email is required" });
+        return res.status(400).json({
+            message: "Valid email is required",
+        });
     }
 
     if (!isNonEmptyString(password) || password.length < 6) {
@@ -46,65 +35,79 @@ async function register(req, res) {
         });
     }
 
-    if (role === "student" && studentId !== undefined && typeof studentId !== "number") {
-        return res.status(400).json({
-            message: "studentId must be a number if provided",
-        });
+    // Only student role needs student_id
+    // This student_id means students.id from students table
+    if (role === "student") {
+        if (!student_id) {
+            return res.status(400).json({
+                message: "Student database ID is required for student role",
+            });
+        }
+
+        if (typeof student_id !== "number") {
+            return res.status(400).json({
+                message: "student_id must be a number",
+            });
+        }
     }
 
     try {
-        // If role is student and studentId provided, check that student exists
-        if (role === "student" && studentId !== undefined) {
-            const studentResult = await pool.query(
-                "SELECT * FROM students WHERE id = $1",
-                [studentId]
-            );
-
-            if (studentResult.rows.length === 0) {
-                return res.status(404).json({
-                    message: "Linked student profile not found",
-                });
-            }
-        }
-
         const saltRounds = 10;
-        const passwordHash = await bcrypt.hash(password, saltRounds);
+        const password_hash = await bcrypt.hash(password, saltRounds);
 
         const result = await pool.query(
             `INSERT INTO users (name, email, password_hash, role, student_id)
              VALUES ($1, $2, $3, $4, $5)
              RETURNING id, name, email, role, student_id, created_at`,
-            [name, email, passwordHash, role, studentId || null]
+            [
+                name,
+                email,
+                password_hash,
+                role,
+                role === "student" ? student_id : null,
+            ]
         );
 
         res.status(201).json({
             message: "User registered successfully",
-            data: result.rows[0],
+            user: result.rows[0],
         });
+
     } catch (error) {
+        console.error(error);
+
         if (error.code === "23505") {
             return res.status(400).json({
                 message: "Email already exists",
             });
         }
 
+        if (error.code === "23503") {
+            return res.status(400).json({
+                message: "Invalid student database ID. Student does not exist.",
+            });
+        }
+
         res.status(500).json({
-            message: "Server error while registering user",
-            error: error.message,
+            message: "Server error during registration",
         });
     }
 }
 
-// POST /auth/login
+// Login
 async function login(req, res) {
     const { email, password } = req.body;
 
     if (!isValidEmail(email)) {
-        return res.status(400).json({ message: "Valid email is required" });
+        return res.status(400).json({
+            message: "Valid email is required",
+        });
     }
 
     if (!isNonEmptyString(password)) {
-        return res.status(400).json({ message: "Password is required" });
+        return res.status(400).json({
+            message: "Password is required",
+        });
     }
 
     try {
@@ -121,42 +124,65 @@ async function login(req, res) {
 
         const user = result.rows[0];
 
-        const passwordMatches = await bcrypt.compare(
+        const isPasswordCorrect = await bcrypt.compare(
             password,
             user.password_hash
         );
 
-        if (!passwordMatches) {
+        if (!isPasswordCorrect) {
             return res.status(401).json({
                 message: "Invalid email or password",
             });
         }
 
-        const token = generateToken(user);
+        const token = jwt.sign(
+            {
+                id: user.id,
+                role: user.role,
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+            }
+        );
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+        });
 
         res.json({
             message: "Login successful",
-            token,
             user: {
                 id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                studentId: user.student_id,
+                student_id: user.student_id,
             },
         });
+
     } catch (error) {
+        console.error(error);
+
         res.status(500).json({
-            message: "Server error while logging in",
-            error: error.message,
+            message: "Server error during login",
         });
     }
 }
 
-// GET /auth/me
-async function getMe(req, res) {
+// Logout User
+function logout(req, res) {
+    res.clearCookie("token");
+
     res.json({
-        message: "Current user fetched successfully",
+        message: "Logout successful",
+    });
+}
+
+// Current Logged in User
+function getMe(req, res) {
+    res.json({
         user: req.user,
     });
 }
@@ -164,5 +190,6 @@ async function getMe(req, res) {
 module.exports = {
     register,
     login,
+    logout,
     getMe,
 };

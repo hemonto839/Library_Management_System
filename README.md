@@ -6,11 +6,11 @@ This is my first backend/system-building project.
 
 I am learning Git, JavaScript, Node.js, Express.js, PostgreSQL, API, and system architecture by building a Library Management System step by step.
 
-Level 1: JavaScript Core Logic ✅
-Level 2: Express API ⏭️ Next
-Level 3: PostgreSQL Database / MongoDB (nosql)
+Level 1: JavaScript Core Logic
+Level 2: Express API
+Level 3: PostgreSQL Database 
 Level 4: Authentication
-Level 5: Frontend Dashboard
+Level 5: Frontend Dashboard 
 Level 6: Deployment
 
 ## Main Features Planned
@@ -23,3 +23,9 @@ Level 6: Deployment
 - Calculate fines
 - View reports
 
+
+# 3 Users
+
+-> admin : dev@gmail.com ; pass: dev123
+-> librarian: hemonto@gmail.com ; pass: hemonto123
+-> student: arka@gmail.com ; pass: arka123 

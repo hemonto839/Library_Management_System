@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="topbar">
+            <div>
+                <h1>Student Dashboard</h1>
+                <p id="userInfo"></p>
+            </div>
+
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+
+        <div class="card">
+            <h2>Available Books</h2>
+            <button onclick="loadBooks()">Refresh Books</button>
+            <div id="booksList"></div>
+        </div>
+
+        <div class="card">
+            <h2>My Borrow History</h2>
+            <button onclick="loadMyHistory()">Refresh My History</button>
+            <div id="historyList"></div>
+        </div>
+
+    </div>
+
+    <script>
+        let loggedInUser = null;
+
+        async function checkStudent() {
+            try {
+                const response = await fetch("/auth/me", {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+                const role = data.user.role.toLowerCase().trim();
+
+                if (role !== "student") {
+                    alert("Access denied. Student only page.");
+                    window.location.href = "/login.html";
+                    return;
+                }
+
+                loggedInUser = data.user;
+
+                document.getElementById("userInfo").textContent =
+                    "Welcome " + loggedInUser.name + " | Role: " + loggedInUser.role;
+
+                loadBooks();
+                loadMyHistory();
+
+            } catch (error) {
+                console.log(error);
+                window.location.href = "/login.html";
+            }
+        }
+
+        async function loadBooks() {
+            const booksList = document.getElementById("booksList");
+            booksList.innerHTML = "Loading books...";
+
+            try {
+                const response = await fetch("/books", {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    booksList.innerHTML = data.message || "Failed to load books.";
+                    return;
+                }
+
+                if (!data.data || data.data.length === 0) {
+                    booksList.innerHTML = "No books found.";
+                    return;
+                }
+
+                let html = "<table>";
+                html += "<tr><th>ID</th><th>Title</th><th>Author</th><th>Available</th><th>Total</th></tr>";
+
+                data.data.forEach(function (book) {
+                    html += `
+                        <tr>
+                            <td>${book.id}</td>
+                            <td>${book.title}</td>
+                            <td>${book.author}</td>
+                            <td>${book.available_copies}</td>
+                            <td>${book.total_copies}</td>
+                        </tr>
+                    `;
+                });
+
+                html += "</table>";
+                booksList.innerHTML = html;
+
+            } catch (error) {
+                console.log(error);
+                booksList.innerHTML = "Something went wrong while loading books.";
+            }
+        }
+
+        async function loadMyHistory() {
+            const historyList = document.getElementById("historyList");
+
+            if (!loggedInUser) {
+                historyList.innerHTML = "User information not loaded yet.";
+                return;
+            }
+
+            if (!loggedInUser.student_id) {
+                historyList.innerHTML = "No student ID linked with this user.";
+                return;
+            }
+
+            historyList.innerHTML = "Loading history...";
+
+            try {
+                const response = await fetch("/students/" + loggedInUser.student_id + "/history", {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    historyList.innerHTML = data.message || "Failed to load history.";
+                    return;
+                }
+
+                if (!data.data || data.data.length === 0) {
+                    historyList.innerHTML = "No borrow history found.";
+                    return;
+                }
+
+                let html = "<table>";
+                html += "<tr><th>Record ID</th><th>Book</th><th>Borrow Date</th><th>Due Date</th><th>Return Date</th><th>Status</th><th>Fine</th></tr>";
+
+                data.data.forEach(function (record) {
+                    html += `
+                        <tr>
+                            <td>${record.record_id}</td>
+                            <td>${record.book_title}</td>
+                            <td>${record.borrow_date ? record.borrow_date.substring(0, 10) : ""}</td>
+                            <td>${record.due_date ? record.due_date.substring(0, 10) : ""}</td>
+                            <td>${record.return_date ? record.return_date.substring(0, 10) : "Not returned"}</td>
+                            <td>${record.status}</td>
+                            <td>${record.fine_amount}</td>
+                        </tr>
+                    `;
+                });
+
+                html += "</table>";
+                historyList.innerHTML = html;
+
+            } catch (error) {
+                console.log(error);
+                historyList.innerHTML = "Something went wrong while loading history.";
+            }
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", async function () {
+            try {
+                await fetch("/auth/logout", {
+                    method: "POST",
+                    credentials: "include"
+                });
+
+                window.location.href = "/login.html";
+
+            } catch (error) {
+                console.log(error);
+                window.location.href = "/login.html";
+            }
+        });
+
+        checkStudent();
+    </script>
+
+</body>
+</html>

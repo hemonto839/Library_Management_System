@@ -147,6 +147,97 @@ async function addStudent(req, res) {
     }
 }
 
+// PUT /students/:id
+// Update student information
+async function updateStudent(req, res) {
+    const id = Number(req.params.id);
+    const { name, studentId, department, email } = req.body;
+
+    if (!isPositiveNumber(id)) {
+        return res.status(400).json({
+            message: "Student ID must be a positive number",
+        });
+    }
+
+    if (name !== undefined && !isNonEmptyString(name)) {
+        return res.status(400).json({
+            message: "Student name must be a non-empty string",
+        });
+    }
+
+    if (studentId !== undefined && !isNonEmptyString(studentId)) {
+        return res.status(400).json({
+            message: "Student university ID must be a non-empty string",
+        });
+    }
+
+    if (department !== undefined && !isNonEmptyString(department)) {
+        return res.status(400).json({
+            message: "Department must be a non-empty string",
+        });
+    }
+
+    if (email !== undefined && !isValidEmail(email)) {
+        return res.status(400).json({
+            message: "Valid email is required",
+        });
+    }
+
+    try {
+        const existingStudent = await pool.query(
+            "SELECT * FROM students WHERE id = $1",
+            [id]
+        );
+
+        if (existingStudent.rows.length === 0) {
+            return res.status(404).json({
+                message: "Student not found",
+            });
+        }
+
+        const currentStudent = existingStudent.rows[0];
+
+        const updatedName = name ?? currentStudent.name;
+        const updatedStudentId = studentId ?? currentStudent.student_id;
+        const updatedDepartment = department ?? currentStudent.department;
+        const updatedEmail = email ?? currentStudent.email;
+
+        const result = await pool.query(
+            `UPDATE students
+             SET name = $1,
+                 student_id = $2,
+                 department = $3,
+                 email = $4
+             WHERE id = $5
+             RETURNING *`,
+            [
+                updatedName,
+                updatedStudentId,
+                updatedDepartment,
+                updatedEmail,
+                id,
+            ]
+        );
+
+        res.json({
+            message: "Student updated successfully",
+            data: result.rows[0],
+        });
+
+    } catch (error) {
+        if (error.code === "23505") {
+            return res.status(400).json({
+                message: "Student ID or email already exists",
+            });
+        }
+
+        res.status(500).json({
+            message: "Server error while updating student",
+            error: error.message,
+        });
+    }
+}
+
 // DELETE /students/:id
 // Delete a student if they have no active borrowed books
 async function deleteStudent(req, res) {
@@ -199,5 +290,6 @@ module.exports = {
     searchStudents,
     getStudentById,
     addStudent,
+    updateStudent,
     deleteStudent,
 };
