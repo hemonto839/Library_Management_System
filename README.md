@@ -42,6 +42,7 @@ The goal of this project is to build a complete Library Management System step b
 
 ---
 
+
 ## User Roles
 
 This project has 3 user roles:
@@ -78,7 +79,11 @@ Email: arka@gmail.com
 Password: arka123
 ```
 
-> Note: These demo users must exist in your local database. If they are not available after running the SQL file, create/register them manually.
+## Deployment 
+
+we deploy it using Neon for databse and Render for website host
+
+link to visit website - [text](https://library-management-system-353t.onrender.com)
 
 ---
 
