@@ -1,5 +1,4 @@
 <!-- admin.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,788 +7,699 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-
-    <div class="container">
-
-        <!-- TOP BAR -->
-        <div class="topbar">
-            <div>
-                <h1>Admin Dashboard</h1>
-                <p id="userInfo">Checking admin...</p>
-            </div>
-
-            <button id="logoutBtn" class="logout-btn">Logout</button>
+<div class="container">
+    <!-- TOP BAR (unchanged) -->
+    <div class="topbar">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p id="userInfo">Checking admin...</p>
         </div>
-
-        <!-- BOOK LIST -->
-        <div class="card">
-            <h2>All Books</h2>
-            <button onclick="loadBooks()">Refresh Books</button>
-            <div id="booksList"></div>
-        </div>
-
-        <!-- ADD BOOK -->
-        <div class="card">
-            <h2>Add Book</h2>
-
-            <form id="addBookForm">
-                <label>Title</label>
-                <input type="text" id="bookTitle" required>
-
-                <label>Author</label>
-                <input type="text" id="bookAuthor" required>
-
-                <label>Total Copies</label>
-                <input type="number" id="totalCopies" min="1" required>
-
-                <label>Available Copies</label>
-                <input type="number" id="availableCopies" min="0" required>
-
-                <button type="submit">Add Book</button>
-            </form>
-
-            <p id="addBookMessage"></p>
-        </div>
-
-        <!-- UPDATE BOOK -->
-        <div class="card">
-            <h2>Update Book</h2>
-
-            <form id="updateBookForm">
-                <label>Book Database ID</label>
-                <input type="number" id="updateBookId" required>
-
-                <label>New Title</label>
-                <input type="text" id="updateBookTitle">
-
-                <label>New Author</label>
-                <input type="text" id="updateBookAuthor">
-
-                <label>New Total Copies</label>
-                <input type="number" id="updateTotalCopies" min="1">
-
-                <label>New Available Copies</label>
-                <input type="number" id="updateAvailableCopies" min="0">
-
-                <button type="submit">Update Book</button>
-            </form>
-
-            <p id="updateBookMessage"></p>
-        </div>
-
-        <!-- DELETE BOOK -->
-        <div class="card">
-            <h2>Delete Book</h2>
-
-            <form id="deleteBookForm">
-                <label>Book Database ID</label>
-                <input type="number" id="deleteBookId" required>
-
-                <button type="submit">Delete Book</button>
-            </form>
-
-            <p id="deleteBookMessage"></p>
-        </div>
-
-        <!-- STUDENT LIST -->
-        <div class="card">
-            <h2>All Students</h2>
-            <button onclick="loadStudents()">Refresh Students</button>
-            <div id="studentsList"></div>
-        </div>
-
-        <!-- ADD STUDENT -->
-        <div class="card">
-            <h2>Add Student</h2>
-
-            <form id="addStudentForm">
-                <label>Name</label>
-                <input type="text" id="studentName" required>
-
-                <label>Student University ID</label>
-                <input type="text" id="studentUniversityId" required>
-
-                <label>Department</label>
-                <input type="text" id="studentDepartment" required>
-
-                <label>Email</label>
-                <input type="email" id="studentEmail" required>
-
-                <button type="submit">Add Student</button>
-            </form>
-
-            <p id="addStudentMessage"></p>
-        </div>
-
-        <!-- UPDATE STUDENT -->
-        <div class="card">
-            <h2>Update Student</h2>
-
-            <form id="updateStudentForm">
-                <label>Student Database ID</label>
-                <input type="number" id="updateStudentDatabaseId" required>
-
-                <label>New Name</label>
-                <input type="text" id="updateStudentName">
-
-                <label>New Student University ID</label>
-                <input type="text" id="updateStudentUniversityId">
-
-                <label>New Department</label>
-                <input type="text" id="updateStudentDepartment">
-
-                <label>New Email</label>
-                <input type="email" id="updateStudentEmail">
-
-                <button type="submit">Update Student</button>
-            </form>
-
-            <p id="updateStudentMessage"></p>
-        </div>
-
-        <!-- DELETE STUDENT -->
-        <div class="card">
-            <h2>Delete Student</h2>
-
-            <form id="deleteStudentForm">
-                <label>Student Database ID</label>
-                <input type="number" id="deleteStudentId" required>
-
-                <button type="submit">Delete Student</button>
-            </form>
-
-            <p id="deleteStudentMessage"></p>
-        </div>
-
-        <!-- BORROW BOOK -->
-        <div class="card">
-            <h2>Borrow Book for Student</h2>
-
-            <form id="borrowForm">
-                <label>Student Database ID</label>
-                <input type="number" id="borrowStudentId" required>
-
-                <label>Book Database ID</label>
-                <input type="number" id="borrowBookId" required>
-
-                <button type="submit">Borrow Book</button>
-            </form>
-
-            <p id="borrowMessage"></p>
-        </div>
-
-        <!-- RETURN BOOK -->
-        <div class="card">
-            <h2>Return Book</h2>
-
-            <form id="returnForm">
-                <label>Borrow Record ID</label>
-                <input type="number" id="recordId" required>
-
-                <button type="submit">Return Book</button>
-            </form>
-
-            <p id="returnMessage"></p>
-        </div>
-
-        <!-- STUDENT HISTORY -->
-        <div class="card">
-            <h2>Check Student Borrow History</h2>
-
-            <form id="historyForm">
-                <label>Student Database ID</label>
-                <input type="number" id="historyStudentId" required>
-
-                <button type="submit">Check History</button>
-            </form>
-
-            <div id="historyList"></div>
-        </div>
-
+        <button id="logoutBtn" class="logout-btn">Logout</button>
     </div>
 
-    <script>
-        // ----------------------------
-        // CHECK ADMIN LOGIN
-        // ----------------------------
-        async function checkAdmin() {
-            try {
-                const response = await fetch("/auth/me", {
-                    method: "GET",
-                    credentials: "include"
-                });
+    <!-- SIDEBAR + MAIN CONTENT -->
+    <div class="portal">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-title">MENU</div>
+            <a class="sidebar-link" data-section="dashboardSection" onclick="showSection('dashboardSection')">📊 Dashboard</a>
+            <a class="sidebar-link" data-section="booksSection" onclick="showSection('booksSection')">📚 All Books</a>
+            <a class="sidebar-link" data-section="addBookSection" onclick="showSection('addBookSection')">➕ Add Book</a>
+            <a class="sidebar-link" data-section="borrowReturnSection" onclick="showSection('borrowReturnSection')">🔄 Borrow / Return</a>
+            <a class="sidebar-link" data-section="historySection" onclick="showSection('historySection')">📜 Student History</a>
+            <a class="sidebar-link" data-section="allStudentsSection" onclick="showSection('allStudentsSection')">👥 All Students</a>
+            <a class="sidebar-link" data-section="addStudentSection" onclick="showSection('addStudentSection')">➕ Add Student</a>
+            <a class="sidebar-link" data-section="editDeleteStudentSection" onclick="showSection('editDeleteStudentSection')">✏️ Edit / Delete Student</a>
+        </div>
 
-                const data = await response.json();
+        <!-- MAIN CONTENT (sections) -->
+        <div class="main-content">
+            <!-- SECTION 1: Dashboard -->
+            <div id="dashboardSection" class="section">
+                <div class="card">
+                    <h2>Dashboard Summary</h2>
+                    <div id="summaryContainer" class="stat-cards">Loading summary...</div>
+                </div>
+            </div>
 
-                if (!response.ok) {
-                    window.location.href = "/login.html";
-                    return;
-                }
+            <!-- SECTION 2: All Books (with search) -->
+            <div id="booksSection" class="section">
+                <div class="card">
+                    <h2>All Books</h2>
+                    <input type="text" id="bookSearchInput" class="search-box" placeholder="Search by title or author...">
+                    <button onclick="loadBooks()">Refresh Books</button>
+                    <div id="booksList"></div>
+                </div>
+            </div>
 
-                const role = data.user.role.toLowerCase().trim();
+            <!-- SECTION 3: Add Book (unchanged) -->
+            <div id="addBookSection" class="section">
+                <div class="card">
+                    <h2>Add Book</h2>
+                    <form id="addBookForm">
+                        <label>Title</label>
+                        <input type="text" id="bookTitle" required>
+                        <label>Author</label>
+                        <input type="text" id="bookAuthor" required>
+                        <label>Total Copies</label>
+                        <input type="number" id="totalCopies" min="1" required>
+                        <label>Available Copies</label>
+                        <input type="number" id="availableCopies" min="0" required>
+                        <button type="submit">Add Book</button>
+                    </form>
+                    <p id="addBookMessage"></p>
+                </div>
+            </div>
 
-                if (role !== "admin") {
-                    alert("Access denied. Admin only.");
-                    window.location.href = "/login.html";
-                    return;
-                }
+            <!-- SECTION 4: Borrow / Return (improved) -->
+            <div id="borrowReturnSection" class="section">
+                <div class="card">
+                    <h2>Borrow Book</h2>
+                    <!-- Student search (Borrow) -->
+                    <label>Search Student (name or university ID)</label>
+                    <input type="text" id="borrowStudentSearch" class="search-box" placeholder="Type name or student ID...">
+                    <div id="borrowStudentResults" class="search-results"></div>
+                    <div id="borrowSelectedDisplay" class="selected-display"></div>
+                    <input type="hidden" id="borrowSelectedStudentId">
 
-                document.getElementById("userInfo").textContent =
-                    "Logged in as " + data.user.name + " (" + data.user.email + ")";
+                    <!-- Book search (Borrow) -->
+                    <label>Search Book (title or author)</label>
+                    <input type="text" id="borrowBookSearch" class="search-box" placeholder="Type title or author...">
+                    <div id="borrowBookResults" class="search-results"></div> <!-- it show search elements -->
+                    <div id="borrowSelectedBookDisplay" class="selected-display"></div> <!-- it show selected elements -->
+                    <input type="hidden" id="borrowSelectedBookId">
 
-            } catch (error) {
-                console.log(error);
+                    <button id="borrowSubmitBtn">Borrow Book</button>
+                    <p id="borrowMessage"></p>
+                </div>
+
+                <div class="card">
+                    <h2>Return Book</h2>
+                    <label>Search Student to see active borrows</label>
+                    <input type="text" id="returnStudentSearch" class="search-box" placeholder="Type name or student ID...">
+                    <div id="returnStudentResults" class="search-results"></div>
+                    <div id="returnSelectedDisplay" class="selected-display"></div>
+                    <input type="hidden" id="returnSelectedStudentId">
+                    <div id="activeBorrowsList"></div>
+                    <hr>
+                    <label>Or enter Borrow Record ID directly</label>
+                    <form id="returnForm">
+                        <input type="number" id="recordId" placeholder="Record ID" required>
+                        <button type="submit">Return by ID</button>
+                    </form>
+                    <p id="returnMessage"></p>
+                </div>
+            </div>
+
+            <!-- SECTION 5: Student History (search based) -->
+            <div id="historySection" class="section">
+                <div class="card">
+                    <h2>Student Borrow History</h2>
+                    <label>Search Student</label>
+                    <input type="text" id="historyStudentSearch" class="search-box" placeholder="Type name or student ID...">
+                    <div id="historyStudentResults" class="search-results"></div>
+                    <div id="historySelectedDisplay" class="selected-display"></div>
+                    <input type="hidden" id="historySelectedStudentId">
+                    <div id="historyList"></div>
+                </div>
+            </div>
+
+            <!-- SECTION 6: All Students (with search) -->
+            <div id="allStudentsSection" class="section">
+                <div class="card">
+                    <h2>All Students</h2>
+                    <input type="text" id="studentSearchInput" class="search-box" placeholder="Search by name or student ID...">
+                    <button onclick="loadStudents()">Refresh Students</button>
+                    <div id="studentsList"></div>
+                </div>
+            </div>
+
+            <!-- SECTION 7: Add Student (unchanged) -->
+            <div id="addStudentSection" class="section">
+                <div class="card">
+                    <h2>Add Student</h2>
+                    <form id="addStudentForm">
+                        <label>Name</label>
+                        <input type="text" id="studentName" required>
+                        <label>Student University ID</label>
+                        <input type="text" id="studentUniversityId" required>
+                        <label>Department</label>
+                        <input type="text" id="studentDepartment" required>
+                        <label>Email</label>
+                        <input type="email" id="studentEmail" required>
+                        <button type="submit">Add Student</button>
+                    </form>
+                    <p id="addStudentMessage"></p>
+                </div>
+            </div>
+
+            <!-- SECTION 8: Edit / Delete Student (search + prefilled form + delete) -->
+            <div id="editDeleteStudentSection" class="section">
+                <div class="card">
+                    <h2>Edit or Delete Student</h2>
+                    <label>Search Student</label>
+                    <input type="text" id="editStudentSearch" class="search-box" placeholder="Type name or student ID...">
+                    <div id="editStudentResults" class="search-results"></div>
+                    <div id="editSelectedDisplay" class="selected-display"></div>
+                    <input type="hidden" id="editStudentId">
+
+                    <form id="updateStudentForm">
+                        <label>New Name</label>
+                        <input type="text" id="updateStudentName">
+                        <label>New Student University ID</label>
+                        <input type="text" id="updateStudentUniversityId">
+                        <label>New Department</label>
+                        <input type="text" id="updateStudentDepartment">
+                        <label>New Email</label>
+                        <input type="email" id="updateStudentEmail">
+                        <button type="submit">Update Student</button>
+                    </form>
+                    <p id="updateStudentMessage"></p>
+
+                    <button id="deleteStudentBtn" style="background:#dc2626; margin-top:10px;">Delete Selected Student</button>
+                    <p id="deleteStudentMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ----------------------------
+    // SIDEBAR FUNCTION
+    // ----------------------------
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(sectionId).style.display = 'block';
+        document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+        document.querySelector(`.sidebar-link[data-section="${sectionId}"]`).classList.add('active');
+    }
+
+    // ----------------------------
+    // CHECK ADMIN LOGIN (unchanged)
+    // ----------------------------
+    async function checkAdmin() {
+        try {
+            const response = await fetch("/auth/me", { method: "GET", credentials: "include" });
+            const data = await response.json();
+            if (!response.ok) {
                 window.location.href = "/login.html";
-            }
-        }
-
-        // ----------------------------
-        // LOGOUT
-        // ----------------------------
-        document.getElementById("logoutBtn").addEventListener("click", async function () {
-            await fetch("/auth/logout", {
-                method: "POST",
-                credentials: "include"
-            });
-
-            window.location.href = "/login.html";
-        });
-
-        // ----------------------------
-        // MESSAGE HELPER
-        // ----------------------------
-        function showMessage(id, text, type) {
-            const element = document.getElementById(id); // select the particular paragraph 
-            element.textContent = text; // give the message 
-            element.className = type; // require for css 
-        }
-
-        // ----------------------------
-        // LOAD BOOKS
-        // ----------------------------
-        async function loadBooks() {
-            const booksList = document.getElementById("booksList");
-            booksList.innerHTML = "Loading books...";
-
-            try {
-                const response = await fetch("/books", {
-                    method: "GET",
-                    credentials: "include"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    booksList.innerHTML = data.message;
-                    return;
-                }
-
-                const books = data.data;
-
-                if (!books || books.length === 0) {
-                    booksList.innerHTML = "No books found.";
-                    return;
-                }
-
-                let html = "<table>";
-                html += "<tr>";
-                html += "<th>ID</th>";
-                html += "<th>Title</th>";
-                html += "<th>Author</th>";
-                html += "<th>Total Copies</th>";
-                html += "<th>Available Copies</th>";
-                html += "</tr>";
-
-                books.forEach(function (book) {
-                    html += "<tr>";
-                    html += "<td>" + book.id + "</td>";
-                    html += "<td>" + book.title + "</td>";
-                    html += "<td>" + book.author + "</td>";
-                    html += "<td>" + book.total_copies + "</td>";
-                    html += "<td>" + book.available_copies + "</td>";
-                    html += "</tr>";
-                });
-
-                html += "</table>";
-                booksList.innerHTML = html;
-
-            } catch (error) {
-                console.log(error);
-                booksList.innerHTML = "Could not load books.";
-            }
-        }
-
-        // ----------------------------
-        // ADD BOOK
-        // ----------------------------
-        document.getElementById("addBookForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const title = document.getElementById("bookTitle").value;
-            const author = document.getElementById("bookAuthor").value;
-            const totalCopies = Number(document.getElementById("totalCopies").value);
-            const availableCopies = Number(document.getElementById("availableCopies").value);
-
-            if (availableCopies > totalCopies) {
-                showMessage("addBookMessage", "Available copies cannot be greater than total copies.", "error");
                 return;
             }
-
-            try {
-                const response = await fetch("/books", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        title: title,
-                        author: author,
-                        totalCopies: totalCopies,
-                        availableCopies: availableCopies
-                    })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("addBookMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("addBookMessage", data.message, "success");
-                document.getElementById("addBookForm").reset();
-                loadBooks();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("addBookMessage", "Could not add book.", "error");
+            const role = data.user.role.toLowerCase().trim();
+            if (role !== "admin") {
+                alert("Access denied. Admin only.");
+                window.location.href = "/login.html";
+                return;
             }
-        });
-
-        // ----------------------------
-        // UPDATE BOOK
-        // ----------------------------
-        document.getElementById("updateBookForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const bookId = document.getElementById("updateBookId").value;
-
-            const title = document.getElementById("updateBookTitle").value;
-            const author = document.getElementById("updateBookAuthor").value;
-            const totalCopiesValue = document.getElementById("updateTotalCopies").value;
-            const availableCopiesValue = document.getElementById("updateAvailableCopies").value;
-
-            const requestBody = {};
-
-            if (title) {
-                requestBody.title = title;
-            }
-
-            if (author) {
-                requestBody.author = author;
-            }
-
-            if (totalCopiesValue) {
-                requestBody.totalCopies = Number(totalCopiesValue);
-            }
-
-            if (availableCopiesValue) {
-                requestBody.availableCopies = Number(availableCopiesValue);
-            }
-
-            try {
-                const response = await fetch("/books/" + bookId, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify(requestBody)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("updateBookMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("updateBookMessage", data.message, "success");
-                document.getElementById("updateBookForm").reset();
-                loadBooks();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("updateBookMessage", "Could not update book.", "error");
-            }
-        });
-
-        // ----------------------------
-        // DELETE BOOK
-        // ----------------------------
-        document.getElementById("deleteBookForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const bookId = document.getElementById("deleteBookId").value;
-
-            try {
-                const response = await fetch("/books/" + bookId, {
-                    method: "DELETE",
-                    credentials: "include"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("deleteBookMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("deleteBookMessage", data.message, "success");
-                document.getElementById("deleteBookForm").reset();
-                loadBooks();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("deleteBookMessage", "Could not delete book.", "error");
-            }
-        });
-
-        // ----------------------------
-        // LOAD STUDENTS
-        // ----------------------------
-        async function loadStudents() {
-            const studentsList = document.getElementById("studentsList");
-            studentsList.innerHTML = "Loading students...";
-
-            try {
-                const response = await fetch("/students", {
-                    method: "GET",
-                    credentials: "include"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    studentsList.innerHTML = data.message;
-                    return;
-                }
-
-                const students = data.data;
-
-                if (!students || students.length === 0) {
-                    studentsList.innerHTML = "No students found.";
-                    return;
-                }
-
-                let html = "<table>";
-                html += "<tr>";
-                html += "<th>Database ID</th>";
-                html += "<th>Name</th>";
-                html += "<th>Student ID</th>";
-                html += "<th>Department</th>";
-                html += "<th>Email</th>";
-                html += "</tr>";
-
-                students.forEach(function (student) {
-                    html += "<tr>";
-                    html += "<td>" + student.id + "</td>";
-                    html += "<td>" + student.name + "</td>";
-                    html += "<td>" + student.student_id + "</td>";
-                    html += "<td>" + student.department + "</td>";
-                    html += "<td>" + student.email + "</td>";
-                    html += "</tr>";
-                });
-
-                html += "</table>";
-                studentsList.innerHTML = html;
-
-            } catch (error) {
-                console.log(error);
-                studentsList.innerHTML = "Could not load students.";
-            }
+            document.getElementById("userInfo").textContent = "Logged in as " + data.user.name + " (" + data.user.email + ")";
+        } catch (error) {
+            console.log(error);
+            window.location.href = "/login.html";
         }
+    }
 
-        // ----------------------------
-        // ADD STUDENT
-        // ----------------------------
-        document.getElementById("addStudentForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+    // ----------------------------
+    // LOGOUT (unchanged)
+    // ----------------------------
+    document.getElementById("logoutBtn").addEventListener("click", async function () {
+        await fetch("/auth/logout", { method: "POST", credentials: "include" });
+        window.location.href = "/login.html";
+    });
 
-            const name = document.getElementById("studentName").value;
-            const studentId = document.getElementById("studentUniversityId").value;
-            const department = document.getElementById("studentDepartment").value;
-            const email = document.getElementById("studentEmail").value;
+    // ----------------------------
+    // MESSAGE HELPER (unchanged)
+    // ----------------------------
+    function showMessage(id, text, type) {
+        const element = document.getElementById(id);
+        element.textContent = text;
+        element.className = type;
+    }
 
-            try {
-                const response = await fetch("/students", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        name: name,
-                        studentId: studentId,
-                        department: department,
-                        email: email
-                    })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("addStudentMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("addStudentMessage", data.message, "success");
-                document.getElementById("addStudentForm").reset();
-                loadStudents();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("addStudentMessage", "Could not add student.", "error");
+    // ----------------------------
+    // DASHBOARD SUMMARY (using /reports/summary)
+    // ----------------------------
+    async function loadSummary() {
+        const container = document.getElementById("summaryContainer");
+        try {
+            const res = await fetch("/reports/summary", { credentials: "include" });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+            const summary = data.data;
+            let html = '';
+            for (let [key, value] of Object.entries(summary)) {
+                html += `<div class="stat-card"><p>${key.replace(/_/g, ' ').toUpperCase()}</p><p>${value}</p></div>`;
             }
+            container.innerHTML = html;
+        } catch (err) {
+            container.innerHTML = '<p class="error">Could not load summary</p>';
+        }
+    }
+
+    // ----------------------------
+    // BOOKS (global array + render + search)
+    // ----------------------------
+    let allBooks = [];
+
+    function renderBooksTable(books) {
+        const booksList = document.getElementById("booksList");
+        if (!books || books.length === 0) {
+            booksList.innerHTML = "No books found.";
+            return;
+        }
+        let html = "<table border='1'><thead><tr><th>Title</th><th>Author</th><th>Available</th><th>Total</th></tr></thead><tbody>";
+        books.forEach(book => {
+            let badge = book.available_copies > 0 ? `<span class="badge badge-available">${book.available_copies} available</span>` : `<span class="badge badge-borrowed">Not available</span>`;
+            html += `<tr><td>${escapeHtml(book.title)}</td><td>${escapeHtml(book.author)}</td><td>${badge}</td><td>${book.total_copies}</td></tr>`;
         });
+        html += "</tbody></table>";
+        booksList.innerHTML = html;
+    }
 
-        // ----------------------------
-        // UPDATE STUDENT
-        // ----------------------------
-        document.getElementById("updateStudentForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
-            const studentDatabaseId = document.getElementById("updateStudentDatabaseId").value;
-
-            const name = document.getElementById("updateStudentName").value;
-            const studentId = document.getElementById("updateStudentUniversityId").value;
-            const department = document.getElementById("updateStudentDepartment").value;
-            const email = document.getElementById("updateStudentEmail").value;
-
-            const requestBody = {};
-
-            if (name) {
-                requestBody.name = name;
+    async function loadBooks() {
+        const booksList = document.getElementById("booksList");
+        booksList.innerHTML = "Loading books...";
+        try {
+            const response = await fetch("/books", { method: "GET", credentials: "include" });
+            const data = await response.json();
+            if (!response.ok) {
+                booksList.innerHTML = data.message;
+                return;
             }
+            allBooks = data.data || [];
+            renderBooksTable(allBooks);
+        } catch (error) {
+            console.log(error);
+            booksList.innerHTML = "Could not load books.";
+        }
+    }
 
-            if (studentId) {
-                requestBody.studentId = studentId;
-            }
+    document.getElementById("bookSearchInput").addEventListener("keyup", function() {
+        const query = this.value.toLowerCase();
+        const filtered = allBooks.filter(b => b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query));
+        renderBooksTable(filtered);
+    });
 
-            if (department) {
-                requestBody.department = department;
-            }
+    // ADD BOOK (unchanted)
+    document.getElementById("addBookForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const title = document.getElementById("bookTitle").value;
+        const author = document.getElementById("bookAuthor").value;
+        const totalCopies = Number(document.getElementById("totalCopies").value);
+        const availableCopies = Number(document.getElementById("availableCopies").value);
+        if (availableCopies > totalCopies) {
+            showMessage("addBookMessage", "Available copies cannot be greater than total copies.", "error");
+            return;
+        }
+        try {
+            const response = await fetch("/books", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ title, author, totalCopies, availableCopies })
+            });
+            const data = await response.json();
+            if (!response.ok) return showMessage("addBookMessage", data.message, "error");
+            showMessage("addBookMessage", data.message, "success");
+            document.getElementById("addBookForm").reset();
+            loadBooks();
+        } catch (error) {
+            showMessage("addBookMessage", "Could not add book.", "error");
+        }
+    });
 
-            if (email) {
-                requestBody.email = email;
-            }
+    // ----------------------------
+    // STUDENTS (global array + search)
+    // ----------------------------
+    let allStudents = [];
 
-            try {
-                const response = await fetch("/students/" + studentDatabaseId, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify(requestBody)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("updateStudentMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("updateStudentMessage", data.message, "success");
-                document.getElementById("updateStudentForm").reset();
-                loadStudents();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("updateStudentMessage", "Could not update student.", "error");
-            }
+    function renderStudentsTable(students) {
+        const container = document.getElementById("studentsList");
+        if (!students || students.length === 0) {
+            container.innerHTML = "No students found.";
+            return;
+        }
+        let html = "<table border='1'><thead><tr><th>Name</th><th>Student ID</th><th>Department</th><th>Email</th></tr></thead><tbody>";
+        students.forEach(s => {
+            html += `<tr><td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.student_id)}</td><td>${escapeHtml(s.department)}</td><td>${escapeHtml(s.email)}</td></tr>`;
         });
+        html += "</tbody></table>";
+        container.innerHTML = html;
+    }
 
-        // ----------------------------
-        // DELETE STUDENT
-        // ----------------------------
-        document.getElementById("deleteStudentForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const studentId = document.getElementById("deleteStudentId").value;
-
-            try {
-                const response = await fetch("/students/" + studentId, {
-                    method: "DELETE",
-                    credentials: "include"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("deleteStudentMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("deleteStudentMessage", data.message, "success");
-                document.getElementById("deleteStudentForm").reset();
-                loadStudents();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("deleteStudentMessage", "Could not delete student.", "error");
+    async function loadStudents() {
+        const container = document.getElementById("studentsList");
+        container.innerHTML = "Loading students...";
+        try {
+            const response = await fetch("/students", { method: "GET", credentials: "include" });
+            const data = await response.json();
+            if (!response.ok) {
+                container.innerHTML = data.message;
+                return;
             }
-        });
+            allStudents = data.data || [];
+            renderStudentsTable(allStudents);
+        } catch (error) {
+            console.log(error);
+            container.innerHTML = "Could not load students.";
+        }
+    }
 
-        // ----------------------------
-        // BORROW BOOK
-        // ----------------------------
-        document.getElementById("borrowForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+    document.getElementById("studentSearchInput").addEventListener("keyup", function() {
+        const query = this.value.toLowerCase();
+        const filtered = allStudents.filter(s => s.name.toLowerCase().includes(query) || s.student_id.toLowerCase().includes(query));
+        renderStudentsTable(filtered);
+    });
 
-            const studentId = Number(document.getElementById("borrowStudentId").value);
-            const bookId = Number(document.getElementById("borrowBookId").value);
+    // ADD STUDENT (unchanged)
+    document.getElementById("addStudentForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const name = document.getElementById("studentName").value;
+        const studentId = document.getElementById("studentUniversityId").value;
+        const department = document.getElementById("studentDepartment").value;
+        const email = document.getElementById("studentEmail").value;
+        try {
+            const response = await fetch("/students", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name, studentId, department, email })
+            });
+            const data = await response.json();
+            if (!response.ok) return showMessage("addStudentMessage", data.message, "error");
+            showMessage("addStudentMessage", data.message, "success");
+            document.getElementById("addStudentForm").reset();
+            loadStudents();
+        } catch (error) {
+            showMessage("addStudentMessage", "Could not add student.", "error");
+        }
+    });
 
-            try {
-                const response = await fetch("/borrow", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        studentId: studentId,
-                        bookId: bookId
-                    })
-                });
+    // ----------------------------
+    // BORROW (search + selected IDs)
+    // ----------------------------
+    let selectedBorrowStudentId = null;
+    let selectedBorrowBookId = null;
 
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("borrowMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("borrowMessage", data.message, "success");
-                document.getElementById("borrowForm").reset();
-                loadBooks();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("borrowMessage", "Could not borrow book.", "error");
+    function setupStudentSearch(inputId, resultsId, displayId, hiddenId, onSelectCallback) {
+    const input = document.getElementById(inputId);
+    const resultsDiv = document.getElementById(resultsId);
+    input.addEventListener("keyup", async function() {
+            const query = this.value.toLowerCase().trim();
+            if (query.length < 2) { resultsDiv.style.display = "none"; return; }
+            const matches = allStudents.filter(s => s.name.toLowerCase().includes(query) || s.student_id.toLowerCase().includes(query));
+            if (matches.length === 0) {
+                resultsDiv.innerHTML = '<div class="search-result-item">No students found</div>';
+            } else {
+                resultsDiv.innerHTML = matches.slice(0, 6).map(s => {
+                    const safeName = escapeHtml(s.name);
+                    const safeId = escapeHtml(s.student_id);
+                    return `<div class="search-result-item" onclick="selectStudentHelper(${s.id}, '${safeName} (${safeId})', '${inputId}', '${resultsId}', '${displayId}', '${hiddenId}', ${!!onSelectCallback}, ${s.id})">${safeName} — ${safeId}</div>`;
+                }).join('');
             }
+            resultsDiv.style.display = "block";
         });
+    }
 
-        // ----------------------------
-        // RETURN BOOK
-        // ----------------------------
-        document.getElementById("returnForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+    function selectStudentHelper(id, displayText, inputId, resultsId, displayId, hiddenId, hasCallback, studentIdForCallback) {
+        document.getElementById(hiddenId).value = id;
+        document.getElementById(displayId).textContent = "Selected: " + displayText;
+        document.getElementById(displayId).style.display = "block";
+        document.getElementById(resultsId).style.display = "none";
+        document.getElementById(inputId).value = "";
+        if (hasCallback) {
+            // Call the stored callback for this specific search
+            const callbackMap = {
+                'returnStudentSearch': window.returnCallback,
+                'historyStudentSearch': window.historyCallback,
+                'editStudentSearch': window.editCallback
+            };
+            const inputElem = document.getElementById(inputId);
+            const callback = callbackMap[inputElem.id];
+            if (callback) callback(id);
+        }
+    }
 
-            const recordId = Number(document.getElementById("recordId").value);
-
-            try {
-                const response = await fetch("/return", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        recordId: recordId
-                    })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showMessage("returnMessage", data.message, "error");
-                    return;
-                }
-
-                showMessage("returnMessage", data.message, "success");
-                document.getElementById("returnForm").reset();
-                loadBooks();
-
-            } catch (error) {
-                console.log(error);
-                showMessage("returnMessage", "Could not return book.", "error");
+    function setupBookSearch(inputId, resultsId, displayId, hiddenId) {
+        const input = document.getElementById(inputId);
+        const resultsDiv = document.getElementById(resultsId);
+        input.addEventListener("keyup", function() {
+            const query = this.value.toLowerCase().trim();
+            if (query.length < 2) { resultsDiv.style.display = "none"; return; }
+            const matches = allBooks.filter(b => b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query));
+            if (matches.length === 0) {
+                resultsDiv.innerHTML = '<div class="search-result-item">No books found</div>';
+            } else {
+                resultsDiv.innerHTML = matches.slice(0, 6).map(b => `<div class="search-result-item" onclick="selectBookHelper(${b.id}, '${escapeHtml(b.title)}', '${inputId}', '${resultsId}', '${displayId}', '${hiddenId}')">${escapeHtml(b.title)} by ${escapeHtml(b.author)} (${b.available_copies} left)</div>`).join('');
             }
+            resultsDiv.style.display = "block";
         });
+    }
 
-        // ----------------------------
-        // CHECK STUDENT HISTORY
-        // ----------------------------
-        document.getElementById("historyForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+    function selectBookHelper(id, title, inputId, resultsId, displayId, hiddenId) {
+        document.getElementById(hiddenId).value = id;
+        document.getElementById(displayId).textContent = "Selected: " + title;
+        document.getElementById(displayId).style.display = "block";
+        document.getElementById(resultsId).style.display = "none";
+        document.getElementById(inputId).value = "";
+    }
 
-            const studentId = Number(document.getElementById("historyStudentId").value);
-            const historyList = document.getElementById("historyList");
+    // Borrow submit
+    document.getElementById("borrowSubmitBtn").addEventListener("click", async function() {
+        const studentId = document.getElementById("borrowSelectedStudentId").value;
+        const bookId = document.getElementById("borrowSelectedBookId").value;
+        if (!studentId || !bookId) {
+            showMessage("borrowMessage", "Please select a student and a book first.", "error");
+            return;
+        }
+        try {
+            const response = await fetch("/borrow", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ studentId: Number(studentId), bookId: Number(bookId) })
+            });
+            const data = await response.json();
+            if (!response.ok) return showMessage("borrowMessage", data.message, "error");
+            showMessage("borrowMessage", data.message, "success");
+            document.getElementById("borrowSelectedStudentId").value = "";
+            document.getElementById("borrowSelectedBookId").value = "";
+            document.getElementById("borrowSelectedDisplay").style.display = "none";
+            document.getElementById("borrowSelectedBookDisplay").style.display = "none";
+            loadBooks();
+        } catch (error) {
+            showMessage("borrowMessage", "Could not borrow book.", "error");
+        }
+    });
 
-            historyList.innerHTML = "Loading history...";
+    // Setup borrow searches
+    setupStudentSearch("borrowStudentSearch", "borrowStudentResults", "borrowSelectedDisplay", "borrowSelectedStudentId", false);
+    setupBookSearch("borrowBookSearch", "borrowBookResults", "borrowSelectedBookDisplay", "borrowSelectedBookId");
 
-            try {
-                const response = await fetch("/students/" + studentId + "/history", {
-                    credentials: "include"
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    historyList.innerHTML = data.message;
-                    return;
-                }
-
-                const records = data.data;
-
-                if (!records || records.length === 0) {
-                    historyList.innerHTML = "No history found.";
-                    return;
-                }
-
-                let html = "<table>";
-                html += "<tr>";
-                html += "<th>Record ID</th>";
-                html += "<th>Student</th>";
-                html += "<th>Book</th>";
-                html += "<th>Borrow Date</th>";
-                html += "<th>Due Date</th>";
-                html += "<th>Return Date</th>";
-                html += "<th>Status</th>";
-                html += "<th>Fine</th>";
-                html += "</tr>";
-
-                records.forEach(function (record) {
-                    html += "<tr>";
-                    html += "<td>" + (record.record_id || record.id) + "</td>";
-                    html += "<td>" + (record.student_name || "") + "</td>";
-                    html += "<td>" + (record.book_title || "") + "</td>";
-                    html += "<td>" + (record.borrow_date ? record.borrow_date.substring(0, 10) : "") + "</td>";
-                    html += "<td>" + (record.due_date ? record.due_date.substring(0, 10) : "") + "</td>";
-                    html += "<td>" + (record.return_date ? record.return_date.substring(0, 10) : "Not returned") + "</td>";
-                    html += "<td>" + record.status + "</td>";
-                    html += "<td>" + record.fine_amount + "</td>";
-                    html += "</tr>";
-                });
-
-                html += "</table>";
-                historyList.innerHTML = html;
-
-            } catch (error) {
-                console.log(error);
-                historyList.innerHTML = "Could not load history.";
+    // ----------------------------
+    // RETURN (show active borrows for selected student)
+    // ----------------------------
+    let activeBorrows = [];
+    async function loadActiveBorrows(studentId) {
+        const container = document.getElementById("activeBorrowsList");
+        container.innerHTML = "Loading active borrows...";
+        try {
+            const res = await fetch(`/students/${studentId}/history`, { credentials: "include" });
+            const data = await res.json();
+            if (!res.ok) throw new Error();
+            const records = data.data.filter(r => r.status === "borrowed");
+            if (records.length === 0) {
+                container.innerHTML = "<p>No active borrows for this student.</p>";
+                return;
             }
-        });
+            let html = "<table border='1'><thead><tr><th>Book</th><th>Due Date</th><th>Fine</th><th>Action</th></tr></thead><tbody>";
+            records.forEach(rec => {
+                html += `<tr>
+                            <td>${escapeHtml(rec.book_title)}</td>
+                            <td>${formatDate(rec.due_date)}</td>
+                            <td>${rec.fine_amount}</td>
+                            <td><button onclick="returnBook(${rec.record_id || rec.id})">Return</button></td>
+                         </tr>`;
+            });
+            html += "</tbody></table>";
+            container.innerHTML = html;
+        } catch(e) {
+            container.innerHTML = "<p class='error'>Could not load borrows.</p>";
+        }
+    }
 
-        // ----------------------------
-        // PAGE START
-        // ----------------------------
-        checkAdmin();
+    async function returnBook(recordId) {
+        try {
+            const response = await fetch("/return", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ recordId })
+            });
+            const data = await response.json();
+            if (!response.ok) return showMessage("returnMessage", data.message, "error");
+            showMessage("returnMessage", data.message, "success");
+            const studentId = document.getElementById("returnSelectedStudentId").value;
+            if (studentId) loadActiveBorrows(studentId);
+            loadBooks();
+        } catch(e) {
+            showMessage("returnMessage", "Could not return book.", "error");
+        }
+    }
+
+    window.returnBook = returnBook;
+    window.onStudentSelect = loadActiveBorrows;
+    // For Return section
+    window.returnCallback = loadActiveBorrows;
+    setupStudentSearch("returnStudentSearch", "returnStudentResults", "returnSelectedDisplay", "returnSelectedStudentId", true);
+
+    // Manual return form (unchanged)
+    document.getElementById("returnForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const recordId = Number(document.getElementById("recordId").value);
+        try {
+            const response = await fetch("/return", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ recordId })
+            });
+            const data = await response.json();
+            if (!response.ok) return showMessage("returnMessage", data.message, "error");
+            showMessage("returnMessage", data.message, "success");
+            document.getElementById("returnForm").reset();
+            loadBooks();
+        } catch(e) {
+            showMessage("returnMessage", "Could not return book.", "error");
+        }
+    });
+
+    // ----------------------------
+    // STUDENT HISTORY (search based)
+    // ----------------------------
+    async function loadStudentHistory(studentId) {
+        const container = document.getElementById("historyList");
+        container.innerHTML = "Loading history...";
+        try {
+            const response = await fetch(`/students/${studentId}/history`, { credentials: "include" });
+            const data = await response.json();
+            if (!response.ok) {
+                container.innerHTML = data.message;
+                return;
+            }
+            const records = data.data;
+            if (!records || records.length === 0) {
+                container.innerHTML = "No history found.";
+                return;
+            }
+            let html = "<table border='1'><thead><tr><th>Book</th><th>Borrow Date</th><th>Due Date</th><th>Return Date</th><th>Status</th><th>Fine</th></tr></thead><tbody>";
+            records.forEach(rec => {
+                let statusBadge = "";
+                if (rec.status === "borrowed") statusBadge = '<span class="badge badge-borrowed">Borrowed</span>';
+                else if (rec.status === "returned") statusBadge = '<span class="badge badge-returned">Returned</span>';
+                else statusBadge = '<span class="badge badge-overdue">Overdue</span>';
+                html += `<tr>
+                            <td>${escapeHtml(rec.book_title)}</td>
+                            <td>${formatDate(rec.borrow_date)}</td>
+                            <td>${formatDate(rec.due_date)}</td>
+                            <td>${rec.return_date ? formatDate(rec.return_date) : "Not returned"}</td>
+                            <td>${statusBadge}</td>
+                            <td>${rec.fine_amount}</td>
+                         </tr>`;
+            });
+            html += "</tbody></table>";
+            container.innerHTML = html;
+        } catch(e) {
+            container.innerHTML = "Could not load history.";
+        }
+    }
+
+    function formatDate(dateStr) { if (!dateStr) return "N/A"; return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+
+    function onHistoryStudentSelect(studentId) { loadStudentHistory(studentId); }
+    window.onHistoryStudentSelect = onHistoryStudentSelect;
+    // For History section
+    window.historyCallback = loadStudentHistory;
+    setupStudentSearch("historyStudentSearch", "historyStudentResults", "historySelectedDisplay", "historySelectedStudentId", true);
+
+    // ----------------------------
+    // EDIT/DELETE STUDENT (search + prefilled form)
+    // ----------------------------
+    function onEditStudentSelect(studentId) {
+        const student = allStudents.find(s => s.id == studentId);
+        if (student) {
+            document.getElementById("updateStudentName").value = student.name;
+            document.getElementById("updateStudentUniversityId").value = student.student_id;
+            document.getElementById("updateStudentDepartment").value = student.department;
+            document.getElementById("updateStudentEmail").value = student.email;
+        }
+    }
+    window.onEditStudentSelect = onEditStudentSelect;
+    window.editCallback = onEditStudentSelect;
+    setupStudentSearch("editStudentSearch", "editStudentResults", "editSelectedDisplay", "editStudentId", true);
+    
+    // Update student (existing handler but uses hidden id)
+    document.getElementById("updateStudentForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const studentDatabaseId = document.getElementById("editStudentId").value;
+        if (!studentDatabaseId) { showMessage("updateStudentMessage", "No student selected.", "error"); return; }
+        const name = document.getElementById("updateStudentName").value;
+        const studentId = document.getElementById("updateStudentUniversityId").value;
+        const department = document.getElementById("updateStudentDepartment").value;
+        const email = document.getElementById("updateStudentEmail").value;
+        const requestBody = {};
+        if (name) requestBody.name = name;
+        if (studentId) requestBody.studentId = studentId;
+        if (department) requestBody.department = department;
+        if (email) requestBody.email = email;
+        try {
+            const response = await fetch("/students/" + studentDatabaseId, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(requestBody)
+            });
+            const data = await response.json();
+            if (!response.ok) return showMessage("updateStudentMessage", data.message, "error");
+            showMessage("updateStudentMessage", data.message, "success");
+            document.getElementById("updateStudentForm").reset();
+            loadStudents();
+        } catch(e) {
+            showMessage("updateStudentMessage", "Could not update student.", "error");
+        }
+    });
+
+    // Delete student
+    document.getElementById("deleteStudentBtn").addEventListener("click", async function() {
+        const studentId = document.getElementById("editStudentId").value;
+        if (!studentId) { showMessage("deleteStudentMessage", "No student selected.", "error"); return; }
+        const student = allStudents.find(s => s.id == studentId);
+        if (!confirm(`Are you sure you want to delete ${student.name}?`)) return;
+        try {
+            const response = await fetch("/students/" + studentId, { method: "DELETE", credentials: "include" });
+            const data = await response.json();
+            if (!response.ok) return showMessage("deleteStudentMessage", data.message, "error");
+            showMessage("deleteStudentMessage", data.message, "success");
+            document.getElementById("editStudentId").value = "";
+            document.getElementById("editSelectedDisplay").style.display = "none";
+            document.getElementById("updateStudentForm").reset();
+            loadStudents();
+        } catch(e) {
+            showMessage("deleteStudentMessage", "Could not delete student.", "error");
+        }
+    });
+
+    // ----------------------------
+    // PAGE START
+    // ----------------------------
+    checkAdmin().then(() => {
+        loadSummary();
         loadBooks();
         loadStudents();
-    </script>
-
+        showSection('dashboardSection');  // default section
+    });
+</script>
 </body>
 </html>
